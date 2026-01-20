@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Parking Navigation System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M12 2L2 7v10c0 5 10 6 10 6s10-1 10-6V7l-10-5z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h1>Smart Parking Navigation System</h1>
+            </div>
+            <div class="user-info" id="userInfo" style="display: none;">
+                <span id="userName"></span>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <!-- Auth Section -->
+        <div id="authSection" class="auth-section">
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <button class="tab-btn active" onclick="showTab('login')">Login</button>
+                    <button class="tab-btn" onclick="showTab('register')">Register</button>
+                </div>
+
+                <!-- Login Form -->
+                <div id="loginTab" class="tab-content active">
+                    <h2>Login to Your Account</h2>
+                    <form id="loginForm" onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label for="loginUserId">User ID</label>
+                            <input type="text" id="loginUserId" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </form>
+                </div>
+
+                <!-- Register Form -->
+                <div id="registerTab" class="tab-content">
+                    <h2>Create New Account</h2>
+                    <form id="registerForm" onsubmit="handleRegister(event)">
+                        <div class="form-group">
+                            <label for="regUserId">User ID</label>
+                            <input type="text" id="regUserId" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regName">Full Name</label>
+                            <input type="text" id="regName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regPassword">Password</label>
+                            <input type="password" id="regPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div id="dashboardSection" class="dashboard-section" style="display: none;">
+            <!-- Action Panel -->
+            <div class="action-panel">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🅿️</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Slots</span>
+                            <span class="stat-value" id="totalSlots">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Available</span>
+                            <span class="stat-value" id="availableSlots">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🚗</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Occupied</span>
+                            <span class="stat-value" id="occupiedSlots">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="findNearestSlot()">
+                        🔍 Find Nearest Slot
+                    </button>
+                    <button class="btn btn-secondary" onclick="simulateDetection()">
+                        🎲 Simulate Detection
+                    </button>
+                    <button class="btn btn-info" onclick="refreshSlots()">
+                        🔄 Refresh Status
+                    </button>
+                </div>
+            </div>
+
+            <!-- Booking Form -->
+            <div class="booking-panel">
+                <h3>Book a Parking Slot</h3>
+                <form id="bookingForm" onsubmit="handleBooking(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="vehicleId">Vehicle ID</label>
+                            <input type="text" id="vehicleId" placeholder="e.g., ABC123" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="slotId">Slot Number</label>
+                            <input type="number" id="slotId" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="paymentAmount">Payment ($)</label>
+                            <input type="number" id="paymentAmount" step="0.01" value="5.00" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success">Book Slot</button>
+                </form>
+
+                <div class="exit-vehicle">
+                    <h3>Exit Vehicle</h3>
+                    <form id="exitForm" onsubmit="handleExit(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="exitVehicleId">Vehicle ID</label>
+                                <input type="text" id="exitVehicleId" placeholder="e.g., ABC123" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-warning">Exit & Pay</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Parking Slots Grid -->
+            <div class="slots-panel">
+                <h3>Parking Slots Status</h3>
+                <div id="slotsGrid" class="slots-grid"></div>
+            </div>
+
+            <!-- Booking History -->
+            <div class="bookings-panel">
+                <h3>Booking History</h3>
+                <div id="bookingsList" class="bookings-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
